@@ -196,7 +196,8 @@ def main():
                 print(playlist)
             with open(file, 'w', encoding='utf-8') as csvfile:
                 print("\tWriting To {}".format(file))
-                fieldnames = ["Track", "Artist", "Album", "ImageURL"]
+                fieldnames = ["Track", "Artist", "Album", "ImageURL6",
+                              "ImageURL3"]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 for data in files[playlist]:
@@ -204,8 +205,10 @@ def main():
                             "Track": data["track"]["name"],
                             "Artist": data["track"]["artists"][0]["name"],
                             "Album": data["track"]["album"]["name"],
-                            "ImageURL": data["track"]["album"]["images"]
-                                            [0]["url"],
+                            "ImageURL6": data["track"]["album"]["images"]
+                            [0]["url"],
+                            "ImageURL3": data["track"]["album"]["images"]
+                            [1]["url"]
                             }
                     writer.writerow(needed_data)
 
