@@ -12,6 +12,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import csv
+import os
 
 
 class SpotifyAPI():
@@ -19,6 +21,36 @@ class SpotifyAPI():
         # Requires an OAuth token.
         def __init__(self, auth):
                 self._auth = auth
+
+        def get(self, url, params={}, tries=3):
+            """Get a resource from the SpotifyAPI and returns an object, e.g get(me) returns object of "me" which is an url"""
+
+            # Construct the correct url, which is in the form e.g https://api.spotify.com/v1/me
+            if not url.startswith('https://api.spotify.com/v1/'):
+                url = 'https://api.spotify.com/v1/' + url
+            if params:
+                url += ('&' if '?' in url else '?') + urllib.parse.urlencode(params)
+            # Try sending the request a specified number of times
+            for _ in range(tries):
+                try:
+                    req = urllib.request.Request(url)
+                    req.add_header('Authorization', 'Bearer ' + self._auth)
+                    response = urllib.request.urlopen(req)
+                    reader = codecs.getreader('utf-8')
+                    return json.load(reader(response))
+                except Exception as err:
+                    log('Couldn\'t load the URL: {} {}'.format(url, err))
+                    time.sleep(2)
+                    log('Trying again')
+            sys.exit(1)
+
+        def list(self, url, params={}):
+            response = self.get(url, params)
+            items = response['items']
+            while response['next']:
+                response = self.get(response['next'])
+                items += response['items']
+            return items
 
         @staticmethod
         def authorize(client_id, scope):
@@ -32,7 +64,7 @@ class SpotifyAPI():
                                 }))
 
                 # Start a simple, local HTTP server to listen for the authorization token... (i.e. a hack).
-                server = SpotifyAPI._AuthorizationServer('127.0.0.1', '43019')
+                server = SpotifyAPI._AuthorizationServer('127.0.0.1', 43019)
                 try:
                         while True:
                                 server.handle_request()
@@ -99,14 +131,9 @@ def main():
                                     the --token option.')
         parser.add_argument('--token', metavar='OAUTH_TOKEN', help='use a Spotify OAuth token (requires the '
                                                    + '`playlist-read-private` permission)')
-        parser.add_argument('--format', default='csv', choices=['json', 'csv'], help='output format (default: csv)')
-        parser.add_argument('file', help='output filename', nargs='?')
+        parser.add_argument('--format', default='csv', choices=['csv'], help='output format, (default: csv)')
         args = parser.parse_args()
-
-        # If they didn't give a filename, then just prompt them. (They probably just double-clicked.)
-        while not args.file:
-                args.file = input('Enter a file name (e.g. playlists.txt): ')
-
+        files = {}
         # Log into the Spotify API.
         if args.token:
                 spotify = SpotifyAPI(args.token)
@@ -117,4 +144,65 @@ def main():
         me = spotify.get('me')
         log('Logged in as {display_name} ({id})'.format(**me))
 
+        # List all the playlists
 
+        playlists = spotify.list('users/{user_id}/playlists'.format(user_id=me['id']), {'limit': 50})
+        for playlist in playlists:
+            log('Loading playlist: {name} ({tracks[total]} songs)'.format(**playlist))
+            playlist['tracks'] = spotify.list(playlist['tracks']['href'], {'limit': 100})
+            files[playlist['name']] = playlist['tracks']
+
+        print()
+        print("Which Playlist Would You like to download")
+        print("Enter the number of the playlists, seperated by spaces or\nEnter 'all' to download all ")
+        to_choose_from = list(files.keys())
+
+        valid = False
+        choices = []
+        while not valid:
+            for index, name in enumerate(to_choose_from):
+                print("{} : {}".format(index, name))
+            choice = input(">>>")
+            if choice:
+                if choice == "all":
+                    choices = to_choose_from
+                    valid = True
+                else:
+                    numeric = [int(x) for x in choice.split(" ")]
+                    for num in numeric:
+                        try:
+                            choices.append(to_choose_from[num])
+                            valid = True
+                        except IndexError:
+                            valid = False
+                            print("Invalid Choice Of Playlists, Try Again")
+                            continue
+            else:
+                print("If you would like to exit, Try CTRL + C else provide the number of the playlist")
+                continue
+
+        if args.format != 'csv':
+            print('Invalid file type, only json and csv supported, switching to csv')
+        for playlist in choices:
+            file = playlist + '.csv'
+            if os.path.exists(file):
+                print("{} Exists, Overwriting  ".format(file))
+            else:
+                print(playlist)
+            with open(file, 'w', encoding='utf-8') as csvfile:
+                print("\tWriting To {}".format(file))
+                fieldnames = ["Track", "Artist", "Album", "ImageURL"]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for data in files[playlist]:
+                    needed_data = {
+                            "Track": data["track"]["name"],
+                            "Artist": data["track"]["artists"][0]["name"],
+                            "Album": data["track"]["album"]["name"],
+                            "ImageURL": data["track"]["album"]["images"][0]["url"],
+                            }
+                    writer.writerow(needed_data)
+
+
+if __name__ == '__main__':
+    main()
