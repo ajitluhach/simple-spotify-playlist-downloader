@@ -145,16 +145,19 @@ def main():
         log('Logged in as {display_name} ({id})'.format(**me))
 
         # List all the playlists
-
-        playlists = spotify.list('users/{user_id}/playlists'.format(user_id=me['id']), {'limit': 50})
+        playlists = spotify.list('users/{user_id}/playlists'
+                                 .format(user_id=me['id']), {'limit': 50})
         for playlist in playlists:
-            log('Loading playlist: {name} ({tracks[total]} songs)'.format(**playlist))
-            playlist['tracks'] = spotify.list(playlist['tracks']['href'], {'limit': 100})
+            log('Loading Playlist: {name} ({tracks[total]} songs)'
+                .format(**playlist))
+            playlist['tracks'] = spotify.list(playlist['tracks']
+                                              ['href'], {'limit': 100})
             files[playlist['name']] = playlist['tracks']
 
         print()
-        print("Which Playlist Would You like to download")
-        print("Enter the number of the playlists, seperated by spaces or\nEnter 'all' to download all ")
+        print("Which Playlist would You like to download enter the number \
+                of the playlists, seperated by spaces or\
+                \nEnter 'all' to download all of them ")
         to_choose_from = list(files.keys())
 
         valid = False
@@ -175,14 +178,16 @@ def main():
                             valid = True
                         except IndexError:
                             valid = False
-                            print("Invalid Choice Of Playlists, Try Again")
+                            print("Invalid choice of Playlists, Try Again!!")
                             continue
             else:
-                print("If you would like to exit, Try CTRL + C else provide the number of the playlist")
+                print("You didn't provide me with any playlist,\
+                        if you  wanted to exit Try ctrl + c")
                 continue
 
         if args.format != 'csv':
-            print('Invalid file type, only json and csv supported, switching to csv')
+            print('Invalid file type, only json and\
+                    csv supported, switching to csv')
         for playlist in choices:
             file = playlist + '.csv'
             if os.path.exists(file):
@@ -199,7 +204,8 @@ def main():
                             "Track": data["track"]["name"],
                             "Artist": data["track"]["artists"][0]["name"],
                             "Album": data["track"]["album"]["name"],
-                            "ImageURL": data["track"]["album"]["images"][0]["url"],
+                            "ImageURL": data["track"]["album"]["images"]
+                                            [0]["url"],
                             }
                     writer.writerow(needed_data)
 
