@@ -41,7 +41,6 @@ def get_art(url, image_name):
 
 
 def add_metadata_to_song(song_name, song_data):
-    print(2)
     audiofile = eyed3.load(song_name)
     audiofile.tag.title = song_data['name']
     audiofile.tag.artist = song_data['artist']
@@ -80,7 +79,7 @@ def download_songs(songs, folder):
                             {}".format(d['filename']))
     opts = {
           'format': 'bestaudio/best',
-          'forcejson': True,
+          'forcefilename': True,
           'postprocessors': [{
               'key': 'FFmpegExtractAudio',
               'preferredcodec': 'mp3',
@@ -102,7 +101,7 @@ def download_songs(songs, folder):
         opts['outtmpl'] = folder + '/' + song['name'] + ' - ' + song['artist']\
             + '.%(ext)s'
         # url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
-        url = ' '.join([song['name'], song['artist'], 'youtube', 'count'])
+        url = ' '.join([song['name'], song['artist'], 'youtube'])
         url = 'gvsearch1:' + url
         print('[\033[91mFetching\033[00m] {}'.format(probable_filename))
         with youtube_dl.YoutubeDL(opts) as ydl:
