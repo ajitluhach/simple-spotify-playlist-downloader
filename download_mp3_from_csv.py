@@ -40,24 +40,18 @@ def get_art(url, image_name):
     return image_name
 
 
-def add_metadata_to_song(song):
-    audiofile = eyed3.load(song)
-    audiofile.tag.title = song['name']
-    audiofile.tag.artist = song['artist']
-    audiofile.tag.album = song['album']
-    imagename = get_art(song['tag'], song)
+def add_metadata_to_song(song_name, song_data):
+    print(2)
+    audiofile = eyed3.load(song_name)
+    audiofile.tag.title = song_data['name']
+    audiofile.tag.artist = song_data['artist']
+    audiofile.tag.album = song_data['album']
+    imagename = get_art(song_data['art'], song_name)
     imagedata = open(imagename, "rb").read()
     audiofile.tag.images.set(3, imagedata, "image/jpeg", u"This image is same\
                              as the spotify album art for this song")
+    os.remove(imagename)
     audiofile.tag.save()
-
-
-"""
-def download_finish(d):
-    if d['status'] == 'finished':
-        print('\x1b[1A\x1b[2K')
-        print("\x1b[1A[\033[93mConverting\033[00m] {}".format(d['filename']))
-"""
 
 
 class MyLogger(object):
@@ -71,23 +65,19 @@ class MyLogger(object):
         print(msg)
 
 
-download_progress_bar = ProgressBar(max_value=100)
-
-
-def custom_hook(d):
-        """Hook to intercept flow of data from youtube-dl and output\
-                custom messages"""
-        if d['status'] == 'downloading':
-                download_percentage = (float(d['downloaded_bytes']) /
-                                       float(d['total_bytes']) * 100)
-                download_progress_bar.update(download_percentage)
-        if d['status'] == 'finished':
-                print('\x1b[1A\x1b[2K')
-                print("\x1b[1A[\033[93mConverting\033[00m]\
-                        {}".format(d['filename']))
-
-
 def download_songs(songs, folder):
+    def custom_hook(d):
+            """Hook to intercept flow of data from youtube-dl and output\
+                    custom messages"""
+            if d['status'] == 'downloading':
+                    download_progress_bar = ProgressBar(maxval=100).start()
+                    download_percentage = (float(d['downloaded_bytes']) /
+                                           float(d['total_bytes']) * 100)
+                    download_progress_bar.update(download_percentage)
+            if d['status'] == 'finished':
+                    print('\x1b[1A\x1b[2K')
+                    print("\x1b[1A[\033[93mConverting\033[00m]\
+                            {}".format(d['filename']))
     opts = {
           'format': 'bestaudio/best',
           'forcejson': True,
@@ -101,7 +91,7 @@ def download_songs(songs, folder):
       }
     for song in songs:
         probable_filename = folder + '/' + song['name'] + ' - ' +\
-                            song['artist'] + '.mp3'
+            song['artist'] + '.mp3'
         if os.path.isfile(probable_filename):
             # The file may already be there, so skip
             print('[\033[93mSkipping\033[00m] {} by {}'.format
@@ -118,7 +108,7 @@ def download_songs(songs, folder):
         with youtube_dl.YoutubeDL(opts) as ydl:
             ydl.download([url])
         if os.path.isfile(probable_filename):
-            add_metadata_to_song(probable_filename)
+            add_metadata_to_song(probable_filename, song)
 
 
 def main():
@@ -144,13 +134,12 @@ def main():
     else:
         print("No such file exists")
         exit()
-    print(1)
     if args.folder:
         if os.path.isdir(args.folder):
             folder = os.path.abspath(args.folder)
         elif args.create:
             try:
-                os.mkdirs(args.folder)
+                os.mkdir(args.folder)
                 folder = os.path.abspath(args.folder)
                 print("Creating folder '{}'".format(folder))
             except Exception:
@@ -161,7 +150,6 @@ def main():
             exit()
         print("Storing Files In.....: ", folder)
     songs = get_all_songs(csvfile, args.size, args.skip)
-    print(songs)
     download_songs(songs, folder)
 
 
