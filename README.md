@@ -24,21 +24,30 @@ Only Python3 Support
 
 ## Installation
 
-1. Clone the repo
-        `git clone https://github.com/ajitluhach/simple-spotify-playlist-downloader.git`
-        `cd simple-spotify-playlist-downloader`
-2. Install the dependecies from the requirements.txt, run this in terminal
-        `python3 -m pip install requierments.txt`
+* Clone the repo
+
+    `git clone https://github.com/ajitluhach/simple-spotify-playlist-downloader.git`
+    
+    `cd simple-spotify-playlist-downloader`    
+    
+* Install the dependecies from the requirements.txt, run this in terminal
+
+    `python3 -m pip install requierments.txt`
 
 ## Usage
 
-1. Create a CSV Backup of playlists that you want to download using `download_playlist.py`, currently only one format is supported (csv)
-   Usage:     `python3 download_playlist.py`
+* Create a CSV Backup of playlists that you want to download using `download_playlist.py`, currently only one format is supported (csv), Usage:
 
-2. Provide the playlists as input to the file `download_mp3_from_csv.py`, run this for detailed options
-        `python3 download_mp3_from_csv.py playlist.csv -f downloadfolder -c -s 4`
-For more detailed options run:
+        `python3 download_playlist.py -h`
+        
+* Provide the playlists as input to the file `download_mp3_from_csv.py`, run this for detailed options
+
+        python3 download_mp3_from_csv.py playlist.csv -f downloadfolder -c -s 4
+        
+* For more detailed options run: 
+
         `python3 download_mp3_from_csv.py -h`
+
 
 ## Dependencies
 
