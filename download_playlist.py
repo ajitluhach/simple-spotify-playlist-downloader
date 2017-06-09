@@ -155,8 +155,7 @@ def main():
             files[playlist['name']] = playlist['tracks']
 
         print()
-        print("Which Playlist would You like to download enter the number \
-                of the playlists, seperated by spaces or\
+        print("Which Playlist would You like to download enter the number of the playlists, seperated by spaces or\
                 \nEnter 'all' to download all of them ")
         to_choose_from = list(files.keys())
 
