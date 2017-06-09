@@ -70,13 +70,16 @@ def download_songs(songs, folder):
                     custom messages"""
             if d['status'] == 'downloading':
                     download_progress_bar = ProgressBar(maxval=100).start()
-                    download_percentage = (float(d['downloaded_bytes']) /
-                                           float(d['total_bytes']) * 100)
+                    download_percentage = float(d['downloaded_bytes']
+                                                / float(d['total_bytes']) * 100)
                     download_progress_bar.update(download_percentage)
             if d['status'] == 'finished':
                     print('\x1b[1A\x1b[2K')
+                    filename = d['filename']
+                    filename = os.path.basename(filename)
                     print("\x1b[1A[\033[93mConverting\033[00m]\
-                            {}".format(d['filename']))
+                            {}".format(filename))
+    # Youtubedl options
     opts = {
           'format': 'bestaudio/best',
           'forcefilename': True,
@@ -96,12 +99,10 @@ def download_songs(songs, folder):
             print('[\033[93mSkipping\033[00m] {} by {}'.format
                   (song['name'], song['artist']))
             continue
-        # These are youtubeDL API's at work here
         # Name of the current song
         opts['outtmpl'] = folder + '/' + song['name'] + ' - ' + song['artist']\
             + '.%(ext)s'
-        # url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
-        url = ' '.join([song['name'], song['artist'], 'youtube'])
+        url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
         url = 'gvsearch1:' + url
         print('[\033[91mFetching\033[00m] {}'.format(probable_filename))
         with youtube_dl.YoutubeDL(opts) as ydl:
