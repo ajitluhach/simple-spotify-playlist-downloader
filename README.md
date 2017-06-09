@@ -1,10 +1,12 @@
 # A Simple Spotify Playlist Downloader
 
 This is command line utility uses youtube-dl to downloader music from your saved playlists on spotify, with proper album art and metadata.
-You can login to your spotify account using Facebook Login or your username.
-Permissions Required : playlist-read-private
 Only Python3 Support
-(Didn't create it for python2)
+
+## Spotify API
+
+Spotify API Tutorial https://developer.spotify.com/web-api/tutorial/
+Permission required by application: playlist-read-private
 
 ## Features
 
@@ -55,10 +57,6 @@ Depends on following three libraries
 * youtube-dl
 * eyed3
 * progressbar33
-
-## Credits
-* Idea of creating this came from very similar project by Ashish Madeti
-* (I don't know how to tag someone here)
 
 ## PS
 this was just for fun
