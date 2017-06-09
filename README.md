@@ -4,9 +4,10 @@ This is command line utility uses youtube-dl to downloader music from your saved
 "You can login to your spotify account using Facebook Login or your username.
 "Permissions Required : playlist-read-private
 Only Python3 Support
-(Didn't create it python2 support)
+(Didn't create it for python2 support)
 
 ## Features
+
 * Adds metadata to downloaded songs
 * Download Progress
 * Adds Album Art
@@ -14,12 +15,14 @@ Only Python3 Support
 * Give the number of songs to skip
 
 ## TODO
+
 * Download only the songs of higher popularity, instead of downloading the complete playlist.
 * (thinking......)
 
 ## Installation
+
 1. First you'll have to make a csv backup of your playlist using the following repo
-        'git clone https://github.com/ajitluhach/spotify-playlist-to-csv'
+        'git clone https://github.com/ajitluhach/spotify-playlist-to-csv.git'
 2. Clone the repo using these commands
         `git clone https://github.com/ajitluhach/simple-spotify-playlist-downloader.git`
         `cd simple-spotify-playlist-downloader`
