@@ -1,4 +1,4 @@
-certifi==2017.4.17
-chardet==3.0.3
-idna==2.5
+eyeD3==0.8
 progressbar33==2.4
+six==1.10.0
+youtube-dl==2017.6.5
