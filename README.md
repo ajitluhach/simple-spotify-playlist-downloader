@@ -40,15 +40,15 @@ Permission required by application: playlist-read-private
 
 * Create a CSV Backup of playlists that you want to download using `download_playlist.py`, currently only one format is supported (csv), Usage:
 
-        `python3 download_playlist.py -h`
+    `python3 download_playlist.py -h`
         
 * Provide the playlists as input to the file `download_mp3_from_csv.py`, run this for detailed options
 
-        python3 download_mp3_from_csv.py playlist.csv -f downloadfolder -c -s 4
+    `python3 download_mp3_from_csv.py playlist.csv -f downloadfolder -c -s 4`
         
 * For more detailed options run: 
 
-        `python3 download_mp3_from_csv.py -h`
+    `python3 download_mp3_from_csv.py -h`
 
 
 ## Dependencies
@@ -57,6 +57,3 @@ Depends on following three libraries
 * youtube-dl
 * eyed3
 * progressbar33
-
-## PS
-this was just for fun
